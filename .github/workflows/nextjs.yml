@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.17.1  # Align with the Node version you need
+          node-version: 20  # Align with the Node version you need
           cache: 'npm'  # Cache npm dependencies automatically
 
       - name: Install Dependencies
