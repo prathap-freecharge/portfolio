@@ -3,38 +3,40 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Adjust this if your default branch is different
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu environment
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Updated to the latest version
+        with:
+          fetch-depth: 0  # Avoid shallow clone issues
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4  # Updated to support Node.js 20
         with:
-          node-version: 20  # Align with the Node version you need
-          cache: 'npm'  # Cache npm dependencies automatically
+          node-version: 20  # Use the latest Node.js version
+          cache: 'npm'  # Cache npm dependencies
 
       - name: Install Dependencies
-        run: npm install  # Install dependencies using npm
+        run: npm install  # Install npm dependencies
 
       - name: Build Project
-        run: npm run build  # Build your project
+        run: npm run build  # Build the project
 
       - name: Cache npm Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4  # Ensure latest version for Node.js 20 support
         with:
-          path: ~/.npm  # Cache npm directory
+          path: ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v4  # Ensure the latest version
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out  # Adjust based on your build output folder
+          publish_dir: ./out  # Adjust to your build output directory
