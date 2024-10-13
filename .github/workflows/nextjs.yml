@@ -10,33 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Reset Git Configuration
+        run: |
+          git config --global --unset-all http.https://github.com/.extraheader || true
+          git config --global --unset-all core.sshCommand || true
+
       - name: Checkout Repository
-        uses: actions/checkout@v4  # Updated to the latest version
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Avoid shallow clone issues
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          clean: true  # Clear cache to avoid corruption
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4  # Updated to support Node.js 20
+        uses: actions/setup-node@v4
         with:
-          node-version: 20  # Use the latest Node.js version
-          cache: 'npm'  # Cache npm dependencies
+          node-version: 20
+          cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install  # Install npm dependencies
+        run: npm install
 
       - name: Build Project
-        run: npm run build  # Build the project
-
-      - name: Cache npm Dependencies
-        uses: actions/cache@v4  # Ensure latest version for Node.js 20 support
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
+        run: npm run build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4  # Ensure the latest version
+        uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out  # Adjust to your build output directory
+          publish_dir: ./out
