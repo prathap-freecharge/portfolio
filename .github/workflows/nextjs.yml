@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Adjust this if you're using a different branch
+      - main  # Change if your branch is named differently
 
 jobs:
   build:
@@ -11,12 +11,13 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4 for Node.js 20 support
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4  # Updated to v4 for Node.js 20 support
         with:
-          node-version: 20.9.0  # Ensure it's compatible with your Next.js version
+          node-version: 20  # Ensuring it uses the latest version
+          cache: 'pnpm'  # Caching dependencies for faster builds
 
       - name: Install pnpm
         run: npm install -g pnpm
@@ -28,8 +29,7 @@ jobs:
         run: pnpm build
 
       - name: Deploy to GitHub Pages
-        if: success()
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4  # Updated to v4 for Node.js 20 support
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out  # Adjust if needed (e.g., `.next` for Next.js)
+          publish_dir: ./out  # Adjust if needed (e.g., `.next` folder for Next.js)
