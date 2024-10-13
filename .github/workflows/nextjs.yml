@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Change this if your default branch is different
+      - main  # Adjust if you're using a different branch
 
 jobs:
   build:
@@ -19,10 +19,13 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2  # Use the official pnpm setup action
-        with:
-          version: 8  # Use the latest compatible pnpm version
+      - name: Install pnpm
+        run: |
+          corepack enable  # Enable Corepack to manage package managers
+          corepack prepare pnpm@latest --activate  # Install latest pnpm
+
+      - name: Verify pnpm Installation
+        run: pnpm --version  # Verify that pnpm is installed correctly
 
       - name: Install Dependencies
         run: pnpm install
