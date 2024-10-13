@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Similar to specifying `node:18.17.1` image in GitLab
 
     steps:
       - name: Checkout Repository
@@ -16,25 +16,31 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 18.17.1  # Align with the Node version in your GitLab config
+          cache: 'pnpm'  # Cache dependencies automatically
 
-      - name: Install pnpm
+      - name: Enable Corepack and Install pnpm
         run: |
-          corepack enable  # Enable Corepack to manage package managers
-          corepack prepare pnpm@latest --activate  # Install latest pnpm
-
-      - name: Verify pnpm Installation
-        run: pnpm --version  # Verify that pnpm is installed correctly
+          corepack enable
+          corepack prepare pnpm@latest-9 --activate  # Install latest v9 of pnpm
+          pnpm config set store-dir .pnpm-store  # Configure pnpm store directory
 
       - name: Install Dependencies
-        run: pnpm install
+        run: pnpm install  # Install dependencies
 
       - name: Build Project
-        run: pnpm build
+        run: pnpm build  # Build the project
+
+      - name: Cache pnpm Dependencies
+        uses: actions/cache@v3
+        with:
+          path: .pnpm-store  # Cache the pnpm store directory
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out  # Adjust based on your Next.js output folder
+          publish_dir: ./out  # Adjust based on your build output folder
