@@ -3,11 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Adjust if you're using a different branch
+      - main  # Adjust this if your default branch is different
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Similar to specifying `node:18.17.1` image in GitLab
+    runs-on: ubuntu-latest  # Use the latest Ubuntu environment
 
     steps:
       - name: Checkout Repository
@@ -16,28 +16,22 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.17.1  # Align with the Node version in your GitLab config
-          cache: 'pnpm'  # Cache dependencies automatically
-
-      - name: Enable Corepack and Install pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest-9 --activate  # Install latest v9 of pnpm
-          pnpm config set store-dir .pnpm-store  # Configure pnpm store directory
+          node-version: 18.17.1  # Align with the Node version you need
+          cache: 'npm'  # Cache npm dependencies automatically
 
       - name: Install Dependencies
-        run: pnpm install  # Install dependencies
+        run: npm install  # Install dependencies using npm
 
       - name: Build Project
-        run: pnpm build  # Build the project
+        run: npm run build  # Build your project
 
-      - name: Cache pnpm Dependencies
+      - name: Cache npm Dependencies
         uses: actions/cache@v3
         with:
-          path: .pnpm-store  # Cache the pnpm store directory
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          path: ~/.npm  # Cache npm directory
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            ${{ runner.os }}-npm-
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
